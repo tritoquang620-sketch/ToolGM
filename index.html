@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#5b2be0" />
+  <title>ASN Tool GM</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/static/icons/icon-512.png" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="backBtn" class="icon-btn" aria-label="Back">←</button>
+      <div class="brand">ASN Tool GM</div>
+      <button id="homeBtn" class="icon-btn" aria-label="Home">⌂</button>
+    </header>
+
+    <main>
+      <section id="screen-home" class="screen active">
+        <div class="grid-menu">
+          <button class="menu-card" data-open="screen-img">
+            <div class="emoji">🖼️</div>
+            <div class="title">PDF to IMG</div>
+            <div class="desc">Upload tối đa 50 PDF và xuất zip theo CPT / OP / GP</div>
+          </button>
+          <button class="menu-card" data-open="screen-excel">
+            <div class="emoji">📊</div>
+            <div class="title">PDF to EXCEL</div>
+            <div class="desc">Gộp ASN, tính thùng chẵn và thùng lẻ thực tế</div>
+          </button>
+          <button class="menu-card" data-open="screen-packing">
+            <div class="emoji">📦</div>
+            <div class="title">Packing</div>
+            <div class="desc">Quản lý Mã Đơn và Mã Đôi, import Excel</div>
+          </button>
+          <button class="menu-card" data-open="screen-about">
+            <div class="emoji">⚙️</div>
+            <div class="title">Hướng dẫn</div>
+            <div class="desc">Cách dùng nhanh và quy tắc tính của tool</div>
+          </button>
+        </div>
+      </section>
+
+      <section id="screen-img" class="screen">
+        <div class="panel">
+          <h2>PDF to IMG</h2>
+          <p class="hint">Chấp nhận tối đa 50 file PDF. Tool xử lý lần lượt để hợp Render free.</p>
+          <input id="imgFiles" type="file" accept="application/pdf" multiple />
+          <button class="primary" id="runImgBtn">Bắt đầu xử lý</button>
+          <div id="imgResult" class="result"></div>
+        </div>
+      </section>
+
+      <section id="screen-excel" class="screen">
+        <div class="panel">
+          <h2>PDF to EXCEL</h2>
+          <p class="hint">Xuất file Excel chia sheet CPT / OP / GP, tô màu xen kẽ và dòng tổng ASN chuẩn.</p>
+          <input id="excelFiles" type="file" accept="application/pdf" multiple />
+          <button class="primary" id="runExcelBtn">Xuất Excel</button>
+          <div id="excelResult" class="result"></div>
+        </div>
+      </section>
+
+      <section id="screen-packing" class="screen">
+        <div class="panel compact">
+          <div class="subtabs">
+            <button class="subtab active" data-tab="single">Mã Đơn</button>
+            <button class="subtab" data-tab="pair">Mã Đôi</button>
+          </div>
+
+          <div id="singleTab" class="tab-pane active">
+            <div class="toolbar">
+              <button class="primary" id="addSingleBtn">Add Packing</button>
+              <label class="upload-btn">Import Excel <input id="importSingleInput" type="file" accept=".xlsx,.xlsm" hidden /></label>
+            </div>
+            <div id="singleTableWrap"></div>
+          </div>
+
+          <div id="pairTab" class="tab-pane">
+            <div class="toolbar">
+              <button class="primary" id="addPairBtn">Add Mã Đôi</button>
+              <label class="upload-btn">Import Excel <input id="importPairInput" type="file" accept=".xlsx,.xlsm" hidden /></label>
+            </div>
+            <div id="pairTableWrap"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-about" class="screen">
+        <div class="panel">
+          <h2>Quy tắc chính</h2>
+          <ul class="rules">
+            <li>CPT: Line No bắt đầu từ C2.</li>
+            <li>OP: Line No bắt đầu từ C1.</li>
+            <li>GP: Line No là D2 JOB hoặc GP JOB.</li>
+            <li>TỔNG ASN / PCS lẻ = số thùng lẻ thực tế.</li>
+            <li>Mã đơn dư thì tính 1 thùng lẻ.</li>
+            <li>Mã đôi dư thì cả cặp chỉ tính 1 thùng lẻ chung.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="singleDialog">
+    <form id="singleForm" method="dialog" class="dialog-form">
+      <h3>Mã Đơn</h3>
+      <input type="hidden" name="id" />
+      <label>Item <input name="item" required /></label>
+      <label>Rev <input name="rev" required /></label>
+      <label>Packing <input name="packing" type="number" min="1" required /></label>
+      <label>Note <input name="note" /></label>
+      <div class="dialog-actions">
+        <button value="cancel">Huỷ</button>
+        <button class="primary" value="submit">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="pairDialog">
+    <form id="pairForm" method="dialog" class="dialog-form">
+      <h3>Mã Đôi</h3>
+      <input type="hidden" name="id" />
+      <label>Item 1 <input name="item1" required /></label>
+      <label>Rev 1 <input name="rev1" required /></label>
+      <label>Item 2 <input name="item2" required /></label>
+      <label>Rev 2 <input name="rev2" required /></label>
+      <label>Packing <input name="packing" type="number" min="1" required /></label>
+      <label>Note <input name="note" /></label>
+      <div class="dialog-actions">
+        <button value="cancel">Huỷ</button>
+        <button class="primary" value="submit">Lưu</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
